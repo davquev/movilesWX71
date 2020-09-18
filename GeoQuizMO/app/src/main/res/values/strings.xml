@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GeoQuizMO</string>
+    <string name="sentence">¿Es Lima capital de Peru?</string>
+    <string name="btYes">si</string>
+    <string name="btNo">no</string>
+    <string name="btNext">siguiente</string>
+</resources>
