@@ -14,6 +14,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     //final wordPair = WordPair.random();
     return MaterialApp(
+      theme: ThemeData(
+        primaryColor: Colors.greenAccent,
+      ),
       home: RandomWord()
     );
   }
@@ -27,6 +30,8 @@ class RandomWord extends StatefulWidget {
 class RandomWordState extends State<RandomWord> {
   final List<WordPair> suggestions = <WordPair>[];
   final TextStyle biggerFont = TextStyle(fontSize: 18);
+  //aqui
+  final Set<WordPair> saved = Set<WordPair>();
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +41,12 @@ class RandomWordState extends State<RandomWord> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Name Generator!!!'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+                Icons.chrome_reader_mode), 
+            onPressed: pushSaved,)
+        ],
       ),
       body: buildSuggestions(),
     );
@@ -59,10 +70,56 @@ class RandomWordState extends State<RandomWord> {
   }
 
   Widget buildRow(WordPair pair) {
+    final bool alreadySaved = saved.contains(pair);
     return ListTile(
       title: Text(
         pair.asPascalCase,
         style: biggerFont,
+      ),
+      trailing: Icon(
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+      onTap: (){
+        setState(() {
+          if (alreadySaved){
+            saved.remove(pair);
+          }else{
+            saved.add(pair);
+          }
+        });
+      },
+    );
+  }
+
+  void pushSaved() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (BuildContext context){
+          final Iterable<ListTile> tiles = saved.map(
+              (WordPair pair){
+                return ListTile(
+                  title: Text(pair.asPascalCase,
+                  style: biggerFont,
+                  ),
+                );
+              },
+          );
+          final List<Widget> divided = ListTile
+          .divideTiles(
+            context: context,
+            tiles: tiles,
+          )
+          .toList();
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Saved suggestions!!!'),
+            ),
+            body: ListView(
+              children: divided,
+            ),
+          );
+        },
       ),
     );
   }
